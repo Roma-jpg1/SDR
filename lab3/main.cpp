@@ -103,7 +103,7 @@ int main() {
         tx_buff[i+1] = 1500 << 4; // Q
     }
     //prepare fixed bytes in transmit buffer
-cd    //that is a flag (FFFF FFFF) followed by the 64 bit timestamp, split into 8 bytes and packed into the lsb of each of the DAC words.
+    //that is a flag (FFFF FFFF) followed by the 64 bit timestamp, split into 8 bytes and packed into the lsb of each of the DAC words.
     //DAC samples are left aligned 12-bits, so each byte is left shifted into place
     for(size_t i = 0; i < 2; i++)
     {
