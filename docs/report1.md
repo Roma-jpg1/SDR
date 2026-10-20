@@ -1,4 +1,4 @@
-## Тема занятия: Архитектура  Adalm Pluto SDR. GNU Radio. Построение радио-приёмника
+## Тема практической работы: Архитектура  Adalm Pluto SDR. GNU Radio. Построение радио-приёмника
 
 
 ### Целью данной работы является: 
@@ -15,7 +15,7 @@ GNURadio - это инструмент с открытым исходным ко
 
 
 <p align="center">
-  <img src="images/1.png" width="400">
+  <img src="images/1_1.png" width="400">
 </p>
 
 ### Выполнение работы:
@@ -33,16 +33,16 @@ GNURadio - это инструмент с открытым исходным ко
 7. Необязательные блоки (ползунок для выбора частоты и тд.)
 
 <p align="center">
-  <img src="images/2.png" width="600">
+  <img src="images/1_2.png" width="600">
 </p>
 После множества попыток и смены Adalm Pluto, я наконец то смог поймать сигнал и послушать радио.
 
 <p align="center">
-  <img src="images/3.png" width="600">
+  <img src="images/1_3.png" width="600">
 </p>
 
 <p align="center">
-  <img src="images/4.png" width="600">
+  <img src="images/1_4.png" width="600">
 </p>
 
 ### Вывод:
