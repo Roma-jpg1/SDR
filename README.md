@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/satellite-orbit.gif" alt="Орбитальные спутники над Землёй" width="100%">
+</p>
+
 # Производственная практика - SDR
 ## Петров Роман Юрьевич 
 
