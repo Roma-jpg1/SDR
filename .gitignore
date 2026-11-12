@@ -13,6 +13,7 @@ cmake-build-*/
 *.so
 *.dylib
 *.exe
+main
 
 # Captured SDR samples
 *.pcm
