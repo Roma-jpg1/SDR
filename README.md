@@ -16,11 +16,13 @@
 │   └── report3.md      # Отчет №3
 ├── include/
 │   ├── config.h        # Частоты, SPS, фильтр h и режим модуляции
+│   ├── gui.h           # Общий вектор комплексных отсчётов и флаг работы
 │   ├── modulate.h      # BPSK, QPSK, апсэмплинг и свертка
 │   ├── sdr.h           # Инициализация PlutoSDR
 │   └── tx_rx.h         # Прием и передача
 ├── src/
 │   ├── main.cpp        # Запуск rx/tx режимов
+│   ├── gui.cpp         # ImGui/ImPlot: созвездие и амплитуда от времени
 │   ├── modulate.cpp    # Генерация бит, BPSK/QPSK и свертка
 │   ├── plot.py         # Отрисовка I/Q
 │   ├── sdr.cpp         # Создание устройства в SoapySDR
@@ -42,12 +44,12 @@
 ## Сборка и запуск проекта
 
 ### 1. Требования и зависимости
-Для работы проекта необходимы компилятор C++, CMake, Python3, а также библиотеки для взаимодействия с Adalm-Pluto (libiio, libad9361-iio, SoapySDR и драйвер SoapyPlutoSDR).
+Для работы проекта необходимы компилятор C++17, CMake, SDL2, OpenGL, а также библиотеки для взаимодействия с Adalm-Pluto (libiio, libad9361-iio, SoapySDR и драйвер SoapyPlutoSDR). Python3 нужен только для просмотра записей через `plot.py`.
 
 Установка основных пакетов в Ubuntu/Debian:
 ```bash
 sudo apt update
-sudo apt install -y build-essential cmake git libusb-1.0-0-dev libxml2-dev libbison-dev flex libcdk5-dev python3-numpy python3-matplotlib
+sudo apt install -y build-essential cmake git libsdl2-dev libgl1-mesa-dev libusb-1.0-0-dev libxml2-dev libbison-dev flex libcdk5-dev python3-numpy python3-matplotlib
 ```
 
 ### 2. Инициализация сабмодулей
@@ -121,7 +123,19 @@ cd build
 ./main <rx|tx> [uri]
 ```
 
-### 6. Визуализация принятых сэмплов
+### 6. Графики во время приёма
+
+При запуске `rx` или `tx` открывается одно окно с двумя графиками:
+- **Constellation** — принятые точки I/Q.
+- **Amplitude vs time** — I, Q и модуль `sqrt(I² + Q²)`. Время в миллисекундах от начала показанного блока.
+
+Настроек в окне нет. Частоты и режим модуляции задаются в `include/config.h`, частота дискретизации — в `src/tx_rx.cpp`.
+
+SDR работает в отдельном `std::thread`. Общий `std::vector<std::complex<double>>` выделяется один раз по размеру MTU приёмного потока, после `readStream` SDR перезаписывает его элементы. ImGui работает в основном потоке и каждый кадр напрямую читает этот вектор через `PlotScatterG` и `PlotLineG`. Принятые отсчёты также сохраняются в PCM.
+
+Закрытие окна останавливает цикл приёма, после чего программа закрывает файл и потоки SDR.
+
+### 7. Визуализация записанных сэмплов
 Для отображения графиков I/Q компонент и амплитуды записанного сигнала:
 1. Убедитесь, что файл `rxdata.pcm` находится по пути `./build/rxdata.pcm`:
 2. Запустите скрипт визуализации:

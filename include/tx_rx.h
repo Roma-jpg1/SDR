@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
-int run(const char *uri, bool is_tx);
+struct SignalData;
+
+int run(const char *uri, bool is_tx, SignalData &data);
 
 #endif

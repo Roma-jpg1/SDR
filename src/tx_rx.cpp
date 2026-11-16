@@ -2,6 +2,7 @@
 #include "modulate.h"
 #include "sdr.h"
 #include "config.h"
+#include "gui.h"
 
 #include <SoapySDR/Formats.h>
 #include <stdint.h>
@@ -9,10 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int run(const char *uri, bool is_tx) {
+int run(const char *uri, bool is_tx, SignalData &data) {
     SoapySDRDevice *sdr = make_device(uri);
 
     int sample_rate = 1e6;
+    data.sample_rate = sample_rate;
     int rx_freq = freq1;
     int tx_freq = freq2;
     const char *filename = "rxdata.pcm";
@@ -41,6 +43,7 @@ int run(const char *uri, bool is_tx) {
 
     size_t rx_mtu = SoapySDRDevice_getStreamMTU(sdr, rxStream);
     size_t tx_mtu = SoapySDRDevice_getStreamMTU(sdr, txStream);
+    data.samples.resize(rx_mtu);
 
     int16_t *rx_buffer = (int16_t*)malloc(2 * rx_mtu * sizeof(int16_t));
     int16_t *tx_buff = (int16_t*)calloc(2 * tx_mtu, sizeof(int16_t));
@@ -65,10 +68,14 @@ int run(const char *uri, bool is_tx) {
             tx_buff[i + 1] = 1500 << 4;}}
 
     void *rx_buffs[] = {rx_buffer};
-    while (1) {
+    while (data.running) {
         int flags;
         long long timeNs = last_time;
         int sr = SoapySDRDevice_readStream(sdr, rxStream, rx_buffs, rx_mtu, &flags, &timeNs, timeoutUs);
+
+        for (int i = 0; i < sr; i++) {
+            data.samples[i] = std::complex<double>(rx_buffer[2 * i], rx_buffer[2 * i + 1]);
+        }
 
         printf("Buffer: %lu - Samples: %i, Flags: %i, Time: %lli, TimeDiff: %lli\n", buffers_read, sr, flags, timeNs, timeNs - last_time);
         last_time = timeNs;
@@ -122,4 +129,5 @@ int run(const char *uri, bool is_tx) {
     SoapySDRDevice_closeStream(sdr, rxStream);
     SoapySDRDevice_closeStream(sdr, txStream);
     SoapySDRDevice_unmake(sdr);
+    return 0;
 }
